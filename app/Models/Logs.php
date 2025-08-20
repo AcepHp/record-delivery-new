@@ -5,15 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class M_Model extends Model
+class Logs extends Model
 {
-    use HasFactory;
-
-    protected $table = 'master_model';
+    protected $table = 'logserror';
     protected $primaryKey = 'id';
     protected $fillable = [
-        'model',
-        'plant_dest', 
-        'pic'
+        'no_transaksi',
+        'tgl_bln_thn',
+        'note',
     ];
+
+    public $timestamps = false; 
 }

@@ -1,25 +1,17 @@
 <?php
 
-use App\Http\Controllers\EditController;
-use App\Http\Controllers\PartMasukController;
-use App\Http\Controllers\PartKeluarController;
-use App\Http\Controllers\PartKeluarControllerUser;
+use App\Http\Controllers\DeliveryRchController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\SparepartController;
-use App\Http\Controllers\SparepartControllerUser;
-use App\Http\Controllers\StockController;
-use App\Http\Controllers\HargaController;
-use App\Http\Controllers\PRController;
-use App\Http\Controllers\PRTableController;
+use App\Http\Controllers\RecordRchController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RecordController;
 use App\Http\Controllers\DeliveryController;
-use App\Models\PurchaseRequest;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DashboardAdminController;
+use App\Models\M_Model_Part;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
-use App\Http\Controllers\DataController;
-use App\Http\Controllers\NewDataController;
 use App\Http\Controllers\ErrorController;
 
 Route::get('/', function () {
@@ -39,9 +31,26 @@ Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('users.de
 
 Route::middleware('auth')->group(function () {
     //dashboard 
-    Route::get('/spareparts-data', [SparepartController::class, 'getSpareparts'])->name('spareparts.data');
-    Route::get('/dashboard', [SparepartController::class,'index'])->name('dashboard');
-    Route::get('/dashboarduser', [SparepartControllerUser::class,'index'])->name('dashboarduser');
+    Route::get('get-spareparts-data', [DashboardController::class, 'getDataAll'])->name('getspareparts.data');
+    Route::get('get-spareparts-datarch', [DashboardController::class, 'getDataAllRch'])->name('getspareparts.datarch');
+    Route::get('spareparts-record', [DashboardController::class, 'getDataRecord'])->name('getrecord.data');
+    Route::get('spareparts-recordrch', [DashboardController::class, 'getDataRecordRch'])->name('getrecord.datarch');
+    Route::get('error-logs', [DashboardController::class, 'getDataError'])->name('getrecord.error');
+    Route::get('error-logs-rch', [DashboardController::class, 'getDataErrorRch'])->name('getrecord.errorrch');
+    Route::get('/dashboard', [DashboardController::class,'index'])->name('dashboard');
+    Route::get('/dashboardreceh', [DashboardController::class,'create'])->name('dashboardreceh');
+    Route::get('export-error-logs', [DashboardController::class, 'exportErrorLogs'])->name('export.error');
+    Route::get('export-error-logs-rch', [DashboardController::class, 'exportErrorLogsRch'])->name('export.errorrch');
+    Route::get('dashboard-transaksi', [DashboardController::class, 'dashboardTransaksi'])->name('export.dashboard');
+    Route::get('dashboard-transaksi-detail', [DashboardController::class, 'dashboardTransaksiDetail'])->name('export.dashboarddtl');
+    Route::get('dashboardrch-transaksi', [DashboardController::class, 'dashboardRecehTransaksi'])->name('export.dashboardrch');
+    Route::get('dashboardrch-transaksi-detail', [DashboardController::class, 'dashboardRecehTransaksiDetail'])->name('export.dashboarddtlrch');
+
+    //dashboard admin
+    Route::get('/dashboardadmin', [DashboardAdminController::class,'index'])->name('dashboardadmin');
+    Route::get('/dashboardrecehadmin', [DashboardAdminController::class,'create'])->name('dashboardrecehadmin');
+    Route::get('/dashboarderror', [DashboardAdminController::class,'errorview'])->name('dashboarderror');
+
     //profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -51,56 +60,38 @@ Route::middleware('auth')->group(function () {
         return view('pemindahan.import'); 
     })->name('spareparts.import.view');
 
-    Route::get('/import/data', [DataController::class, 'getSpareparts'])->name('spareparts.table');
-    Route::post('/import', [SparepartController::class, 'import'])->name('spareparts.import');
-    
-    //folder data komponen
-    Route::resource('/data', DataController::class);
-    //folder data komponen baru
-    Route::prefix('data/new')->group(function () {
-        Route::get('/create', [NewDataController::class, 'create'])->name('data.new.create');
-        Route::post('/store', [NewDataController::class, 'store'])->name('data.new.store');
-    });
-    //input part masuk
-    Route::resource('/partmasuk', PartMasukController::class);
-
-
     //record
     Route::resource('/record', RecordController::class);
     Route::get('/get-model-data/{model}', [RecordController::class, 'getModelData']);
+    Route::post('/get-plant-dest', [RecordController::class, 'getPlantDest'])->name('record.getPlantDest');
+    Route::get('/getQtyBox/{model}', function($model) {
+        $part = M_Model_Part::where('model', $model)->first();
+        if ($part) {
+            return response()->json(['qty_box' => $part->qty_box]);
+        }
+        return response()->json(['qty_box' => null]);
+    });
+
+    //deliveryrch
+    Route::resource('/deliveryrch', controller: DeliveryRchController::class);
+    Route::get('/delivery-data-receh', [DeliveryRchController::class, 'createreceh'])->name('delivery.createreceh');
+    Route::post('/store-data-receh', [DeliveryRchController::class, 'storereceh'])->name('delivery.storereceh');
+    Route::post('/delivery/checkSerialNumber', [DeliveryRchController::class, 'checkSerialNumber'])->name('delivery.checkSerialNumber');
+    Route::get('/delivery-data-rch', [DeliveryRchController::class, 'getDeliveryDataRch'])->name('delivery.datareceh');
+    Route::get('/delivery/{noTransaksi}/total-qty-rch', [DeliveryRchController::class, 'getTotalQty']);
+    Route::post('/delivery/compare-rch', [DeliveryRchController::class, 'compareQty'])->name('delivery.comparereceh');
+    Route::post('/verify-passwordrch', [DeliveryRchController::class, 'verifyPasswordRch'])->name('verify.passwordrch');
+    Route::post('/save-log-rch', [DeliveryRchController::class, 'saveLogRch'])->name('save.logrch');
+
     //delivery
     Route::resource('/delivery', DeliveryController::class);
     Route::post('/delivery/compare', [DeliveryController::class, 'compareQty'])->name('delivery.compare');
     Route::get('/delivery-data', [DeliveryController::class, 'getDeliveryData'])->name('delivery.data');
-    //edit
-    Route::resource('/editdata', EditController::class);
-
-    //input part keluar
-    Route::resource('/partkeluar', PartKeluarController::class);
-    Route::resource('/partkeluaruser', PartKeluarControllerUser::class);
-    //input stock part
-    Route::resource('/stock', StockController::class);
-    //input harga part
-    Route::resource('/harga', HargaController::class);
-    //fungsi filter
-    Route::get('/data/no-stations/{line}', [DataController::class, 'getNoStationsByLine'])->name('data.no-stations');
-    Route::get('/data/nama-stations/{line}', [DataController::class, 'getNamaStationsByLine'])->name('data.nama-stations');
-    Route::get('/data/search-nama-barang/{term}', [DataController::class, 'searchNamaBarang'])->name('data.search-nama-barang');
-    Route::get('/data/search-no-purchase/{term}', [PRController::class, 'searchNamaBarang'])->name('data.search-no-purchase');
-    Route::get('/data/lines', [DataController::class, 'getLines'])->name('data.lines');
-    // purchase request
-    Route::resource('/purchase', PRController::class);
-    //folder data komponen baru
-    Route::prefix('purchase/new')->group(function () {
-        Route::get('/create', [PRTableController::class, 'create'])->name('purchase.new.create');
-        Route::post('/store', [PRTableController::class, 'store'])->name('purchase.new.store');
-        Route::get('/purchase-data', [PRTableController::class, 'getSpareparts'])->name('purchase.new.data');
-        Route::get('/purchase-table', [PRTableController::class, 'getData'])->name('purchase.new.tabel');
-        Route::post('/purchase/update/status', [PRTableController::class, 'updateStatus'])->name('purchase.update.status');
-        Route::get('/purchase/check-status', [PRTableController::class, 'checkStatus'])->name('purchase.check.status');
-    });
+    Route::get('/delivery/{noTransaksi}/total-qty', [DeliveryController::class, 'getTotalQty']);
+    Route::post('/verify-password', [DeliveryController::class, 'verifyPassword'])->name('verify.password');
+    Route::post('/save-log', [DeliveryController::class, 'saveLog'])->name('save.log');
 });
 
-
+    
 require __DIR__.'/auth.php';
 

@@ -67,8 +67,8 @@
 
         <!-- Begin page -->
         <div id="layout-wrapper">
-            @include('include.navbar')
-            @include('include.sidebar')
+            @include('include.navbaradmin')
+            @include('include.sidebaradmin')
             @include('include.footer')
             <div class="main-content">
                 @yield('content')

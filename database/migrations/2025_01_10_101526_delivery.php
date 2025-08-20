@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('no_transaksi',25);
             $table->datetime('tgl_bln_thn');
-            $table->string('max_model',50);
+            $table->string('part_number',50);
             $table->string('lot_number', 30);
             $table->string('pic', 50);
             $table->integer('qty');

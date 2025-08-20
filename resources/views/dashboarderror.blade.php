@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.appadmn')
 
 @section('header')
     <h2 class="text-3xl font-semibold text-gray-800 dark:text-gray-200">
@@ -12,14 +12,15 @@
         <div class="row">
             <div class="col-12">
             <div class="page-title-box d-sm-flex align-items-center">
-                <h4 class="mb-sm-0 font-size-18 me-3">Record Delivery</h4>
+                <h4 class="mb-sm-0 font-size-18 me-3">Record Error Logs</h4>
                 <div class="dropdown">
                     <button class="btn btn-secondary btn-smsa dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="fa fa-caret-down"></i>
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <li><a class="dropdown-item" href="{{ route('dashboard') }}">Dashboard</a></li>
-                        <li><a class="dropdown-item" href="{{ route('dashboardreceh') }}">Dashboard Receh</a></li>
+                        <li><a class="dropdown-item" href="{{ route('dashboardadmin') }}">Dashboard</a></li>
+                        <li><a class="dropdown-item" href="{{ route('dashboardrecehadmin') }}">Dashboard Receh</a></li>
+                        <li><a class="dropdown-item" href="{{ route('dashboarderror') }}">Error Logs</a></li>
                     </ul>
                 </div>
 
@@ -37,20 +38,18 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-body">
-                        <h1 class="d-flex justify-content-between">Transaksi ID <a href="{{ route('export.dashboard') }}" class="btn btn-success">Export Data</a></h1>
-                        <table id="record-table" class="table table-hover table-bordered table-responsive">
+                        <h1 class="d-flex justify-content-between">Error Logs <a href="{{ route('export.error') }}" class="btn btn-success">Export Data</a></h1>
+                        <table id="error-table" class="table table-hover table-bordered table-responsive">
                             <thead class="table-header">
                                 <tr>
                                     <th>No Transaksi</th>
-                                    <th>Tanggal Preparation</th>
-                                    <th>Tanggal Delivery</th>
+                                    <th>Tanggal</th>
                                     <th>Model</th>
-                                    <th>Part Name</th>
                                     <th>Part Number</th>
+                                    <th>Lot Number</th>
                                     <th>Tipe Delivery</th>
                                     <th>Plant Destination</th>
-                                    <th>Qty</th>
-                                    <th>Status</th>
+                                    <th>Keterangan</th>
                                 </tr>
                             </thead>
                         </table>
@@ -63,19 +62,18 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-body">
-                    <h1 class="d-flex justify-content-between">Transaksi Detail ID <a href="{{ route('export.dashboarddtl') }}" class="btn btn-success">Export Data</a></h1>
-                        <table id="spareparts-table" class="table table-hover table-bordered table-responsive">
+                        <h1 class="d-flex justify-content-between">Error Logs Receh <a href="{{ route('export.errorrch') }}" class="btn btn-success">Export Data</a></h1>
+                        <table id="errorrch-table" class="table table-hover table-bordered table-responsive">
                             <thead class="table-header">
                                 <tr>
                                     <th>No Transaksi</th>
                                     <th>Tanggal</th>
                                     <th>Model</th>
-                                    <th>Part Name</th>
                                     <th>Part Number</th>
                                     <th>Lot Number</th>
                                     <th>Tipe Delivery</th>
                                     <th>Plant Destination</th>
-                                    <th>Qty</th>
+                                    <th>Keterangan</th>
                                 </tr>
                             </thead>
                         </table>
@@ -123,37 +121,24 @@
 
 @section('scripts')
 
-<script>
+<script>    
    $(document).ready(function() {
-       var table = $('#record-table').DataTable({
+       var table = $('#error-table').DataTable({
            processing: true,
            serverSide: true,
            ajax: {
-               url: '{{ route('getrecord.data') }}',
+               url: '{{ route('getrecord.error') }}',
                type: 'GET'
            },
            columns: [
                { data: 'no_transaksi', name: 'no_transaksi' },
                { data: 'tgl_bln_thn', name: 'tgl_bln_thn' },
-               { data: 'tgl_bln_thn_dlv', name: 'tgl_bln_thn_dlv' },
                { data: 'model', name: 'model' },
-               { data: 'part_name', name: 'part_name' },
                { data: 'part_number', name: 'part_number' },
+               { data: 'lot_number', name: 'lot_number' },
                { data: 'tipe_delv', name: 'tipe_delv' },
                { data: 'plant_dest', name: 'plant_dest' },
-               { data: 'qty', name: 'qty' },
-               { 
-                   data: 'status', 
-                   name: 'status',
-                   render: function(data, type, row) {
-                       if (data === 'Proses') {
-                           return '<span style="color: red; font-weight: bold;">' + data + '</span>';
-                       } else if (data === 'Berhasil') {
-                           return '<span style="color: green; font-weight: bold;">' + data + '</span>';
-                       }
-                       return data;
-                   }
-               }
+               { data: 'note', name: 'note' }
            ],
            paging: true,
            searching: true,
@@ -163,42 +148,41 @@
            lengthMenu: [5, 10, 25, 50],
            lengthChange: false,
            responsive: true,
-            order: [[1, 'desc']]
+           order: [[1, 'desc']]
        });
    });
 </script>
 
-<script>
+<script>    
    $(document).ready(function() {
-    var table = $('#spareparts-table').DataTable({
-        processing: true,
-        serverSide: true,
-        ajax: {
-            url: '{{ route('getspareparts.data') }}',
-            type: 'GET'
-        },
-        columns: [
-            { data: 'no_transaksi', name: 'no_transaksi'}, 
-            { data: 'tgl_bln_thn', name: 'tgl_bln_thn'}, 
-            { data: 'model', name: 'model'}, 
-            { data: 'part_name', name: 'part_name'},         
-            { data: 'part_number', name: 'part_number'},     
-            { data: 'lot_number', name: 'lot_number'},       
-            { data: 'tipe_delv', name: 'tipe_delv'},       
-            { data: 'plant_dest', name: 'plant_dest'},    
-            { data: 'qty', name: 'qty'}
-        ],
-        paging: true,
-        searching: true,
-        ordering: true,
-        info: false,
-        pageLength: 5,
-        lengthMenu: [5, 10, 25, 50],
-        lengthChange: false,
-        responsive: true,
-        order: [[1, 'desc']]
-    });
-});
+       var table = $('#errorrch-table').DataTable({
+           processing: true,
+           serverSide: true,
+           ajax: {
+               url: '{{ route('getrecord.errorrch') }}',
+               type: 'GET'
+           },
+           columns: [
+               { data: 'no_transaksi', name: 'no_transaksi' },
+               { data: 'tgl_bln_thn', name: 'tgl_bln_thn' },
+               { data: 'model', name: 'model' },
+               { data: 'part_number', name: 'part_number' },
+               { data: 'lot_number', name: 'lot_number' },
+               { data: 'tipe_delv', name: 'tipe_delv' },
+               { data: 'plant_dest', name: 'plant_dest' },
+               { data: 'note', name: 'note' }
+           ],
+           paging: true,
+           searching: true,
+           ordering: true,
+           info: false,
+           pageLength: 5,
+           lengthMenu: [5, 10, 25, 50],
+           lengthChange: false,
+           responsive: true,
+           order: [[1, 'desc']]
+       });
+   });
 </script>
 
 @endsection
