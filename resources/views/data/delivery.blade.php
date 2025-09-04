@@ -514,7 +514,16 @@ const tglBlnThn = ('0' + now.getDate()).slice(-2) + '-' +
                     confirmButtonText: 'OK',
                     showConfirmButton: true
                 }).then(() => {
-                    window.location.href = "{{ route('record.create') }}"; 
+                    // Ambil halaman sebelumnya
+                    const previousUrl = document.referrer;
+
+                    if (previousUrl.includes('/record')) {
+                        window.location.href = "{{ route('record.create') }}";
+                    } else if (previousUrl.includes('/dsinput')) {
+                        window.location.href = "{{ route('dsinput.index') }}";
+                    } else {
+                        window.location.href = "{{ route('record.create') }}"; // default
+                    }
                 });
                 playSuccessSound();
             } else {
@@ -529,6 +538,7 @@ const tglBlnThn = ('0' + now.getDate()).slice(-2) + '-' +
                 });
                 playErrorSound();
             }
+
         })
         .catch(error => {
             console.error('Error:', error);

@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\ErrorController;
+use App\Http\Controllers\DsInputController;
 
 Route::get('/', function () {
     return redirect('/login');
@@ -90,6 +91,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/delivery/{noTransaksi}/total-qty', [DeliveryController::class, 'getTotalQty']);
     Route::post('/verify-password', [DeliveryController::class, 'verifyPassword'])->name('verify.password');
     Route::post('/save-log', [DeliveryController::class, 'saveLog'])->name('save.log');
+
+    // dsinput\
+    Route::post('/dsinput/store', [DsInputController::class, 'store'])->name('dsinput.store');
+    Route::post('/dsinput/tambah', [DsInputController::class, 'tambah'])->name('dsinput.tambah');
+    Route::get('/dsinput', [DsInputController::class, 'index'])->name('dsinput.index');
+    Route::get('/dsinput/autocomplete', [DsInputController::class, 'autocomplete'])->name('dsinput.autocomplete');
 });
 
     

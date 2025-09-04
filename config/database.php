@@ -93,6 +93,21 @@ return [
             // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
         ],
 
+        'sqlsrv2' => [
+        'driver' => 'sqlsrv',
+        'url' => env('DATABASE_URL2'),
+        'host' => env('DB_HOST2', 'localhost'),
+        // 'port' => env('DB_PORT2', '1433'),
+        'database' => env('DB_DATABASE2', 'forge'),
+        'username' => env('DB_USERNAME2', 'forge'),
+        'password' => env('DB_PASSWORD2', ''),
+        'charset' => 'utf8',
+        'prefix' => '',
+        'prefix_indexes' => true,
+        // 'encrypt' => env('DB_ENCRYPT2', 'yes'),
+        // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE2', 'false'),
+    ],
+
     ],
 
     /*

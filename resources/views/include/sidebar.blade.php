@@ -25,6 +25,7 @@
                 </a>
                 <ul class="sub-menu" aria-expanded="false">
                     <li><a href="{{ route('record.create') }}" data-key="t-product-detail">New Scan</a></li>
+                    <li><a href="{{ route('dsinput.index') }}" data-key="t-product-detail">New Scan DS</a></li>
                 </ul>
             </li>
     </div>
