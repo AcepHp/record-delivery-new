@@ -88,7 +88,7 @@ class DashboardController extends Controller
             ->join('record', 'delivery.no_transaksi', '=', 'record.no_transaksi')
             ->join('master_model_part', function ($join) {
                 $join->on('delivery.part_number', '=', 'master_model_part.part_number')
-                     ->on('record.model', '=', 'master_model_part.model');
+                    ->on('record.model', '=', 'master_model_part.model');
             })
             ->select(
                 'delivery.no_transaksi', 
@@ -105,8 +105,26 @@ class DashboardController extends Controller
             ->where('delivery.flag', 0)
             ->where('record.flag', 0);
 
-        return DataTables::of($query)->make(true);
+        return DataTables::of($query)
+            ->filter(function ($instance) use ($request) {
+                if ($request->has('search') && $request->get('search')['value'] != '') {
+                    $search = $request->get('search')['value'];
+                    $instance->where(function ($q) use ($search) {
+                        $q->where('delivery.no_transaksi', 'LIKE', "%$search%")
+                        ->orWhere('delivery.tgl_bln_thn', 'LIKE', "%$search%")
+                        ->orWhere('record.model', 'LIKE', "%$search%")
+                        ->orWhere('master_model_part.part_name', 'LIKE', "%$search%")
+                        ->orWhere('delivery.part_number', 'LIKE', "%$search%")
+                        ->orWhere('delivery.lot_number', 'LIKE', "%$search%")
+                        ->orWhere('record.tipe_delv', 'LIKE', "%$search%")
+                        ->orWhere('record.plant_dest', 'LIKE', "%$search%")
+                        ->orWhere('delivery.qty', 'LIKE', "%$search%");
+                    });
+                }
+            })
+            ->make(true);
     }
+
 
     public function getDataAllRch(Request $request)
     {
@@ -114,7 +132,7 @@ class DashboardController extends Controller
             ->join('record_receh', 'delivery_receh.no_transaksi', '=', 'record_receh.no_transaksi')
             ->join('master_model_part', function ($join) {
                 $join->on('delivery_receh.part_number', '=', 'master_model_part.part_number')
-                     ->on('record_receh.model', '=', 'master_model_part.model');
+                    ->on('record_receh.model', '=', 'master_model_part.model');
             })
             ->select(
                 'delivery_receh.no_transaksi', 
@@ -132,8 +150,27 @@ class DashboardController extends Controller
             ->where('delivery_receh.flag', 0)
             ->where('record_receh.flag', 0);
 
-        return DataTables::of($query)->make(true);
+        return DataTables::of($query)
+            ->filter(function ($instance) use ($request) {
+                if ($request->has('search') && $request->get('search')['value'] != '') {
+                    $search = $request->get('search')['value'];
+                    $instance->where(function ($q) use ($search) {
+                        $q->where('delivery_receh.no_transaksi', 'LIKE', "%$search%")
+                        ->orWhere('delivery_receh.tgl_bln_thn', 'LIKE', "%$search%")
+                        ->orWhere('record_receh.model', 'LIKE', "%$search%")
+                        ->orWhere('master_model_part.part_name', 'LIKE', "%$search%")
+                        ->orWhere('delivery_receh.part_number', 'LIKE', "%$search%")
+                        ->orWhere('delivery_receh.serial_number', 'LIKE', "%$search%")
+                        ->orWhere('delivery_receh.lot_number', 'LIKE', "%$search%")
+                        ->orWhere('record_receh.tipe_delv', 'LIKE', "%$search%")
+                        ->orWhere('record_receh.plant_dest', 'LIKE', "%$search%")
+                        ->orWhere('delivery_receh.qty', 'LIKE', "%$search%");
+                    });
+                }
+            })
+            ->make(true);
     }
+
 
     public function getDataRecord(Request $request)
     {
@@ -141,12 +178,12 @@ class DashboardController extends Controller
             ->join('record', 'delivery.no_transaksi', '=', 'record.no_transaksi')
             ->join('master_model_part', function ($join) {
                 $join->on('delivery.part_number', '=', 'master_model_part.part_number')
-                     ->on('record.model', '=', 'master_model_part.model');
+                    ->on('record.model', '=', 'master_model_part.model');
             })
             ->select(
                 'delivery.no_transaksi',
                 'record.tgl_bln_thn',
-                'record.tgl_bln_thn_dlv', 
+                'record.tgl_bln_thn_dlv',
                 'record.model',
                 'master_model_part.part_name',
                 'delivery.part_number',
@@ -157,8 +194,27 @@ class DashboardController extends Controller
             )
             ->distinct();
 
-        return DataTables::of($query)->make(true);
-    }   
+        return DataTables::of($query)
+            ->filter(function ($instance) use ($request) {
+                if ($request->has('search') && $request->get('search')['value'] != '') {
+                    $search = $request->get('search')['value'];
+                    $instance->where(function ($q) use ($search) {
+                        $q->where('delivery.no_transaksi', 'LIKE', "%$search%")
+                        ->orWhere('record.tgl_bln_thn', 'LIKE', "%$search%")
+                        ->orWhere('record.tgl_bln_thn_dlv', 'LIKE', "%$search%")
+                        ->orWhere('record.model', 'LIKE', "%$search%")
+                        ->orWhere('master_model_part.part_name', 'LIKE', "%$search%")
+                        ->orWhere('delivery.part_number', 'LIKE', "%$search%")
+                        ->orWhere('record.tipe_delv', 'LIKE', "%$search%")
+                        ->orWhere('record.plant_dest', 'LIKE', "%$search%")
+                        ->orWhere('record.qty', 'LIKE', "%$search%")
+                        ->orWhere(DB::raw("CASE WHEN record.flag = 1 THEN 'Proses' ELSE 'Berhasil' END"), 'LIKE', "%$search%");
+                    });
+                }
+            })
+            ->make(true);
+    }
+  
     
     public function getDataRecordRch(Request $request)
     {
@@ -166,7 +222,7 @@ class DashboardController extends Controller
             ->join('record_receh', 'delivery_receh.no_transaksi', '=', 'record_receh.no_transaksi')
             ->join('master_model_part', function ($join) {
                 $join->on('delivery_receh.part_number', '=', 'master_model_part.part_number')
-                     ->on('record_receh.model', '=', 'master_model_part.model');
+                    ->on('record_receh.model', '=', 'master_model_part.model');
             })
             ->select(
                 'delivery_receh.no_transaksi',
@@ -182,8 +238,27 @@ class DashboardController extends Controller
             )
             ->distinct();
 
-        return DataTables::of($query)->make(true);
-    }   
+        return DataTables::of($query)
+            ->filter(function ($instance) use ($request) {
+                if ($request->has('search') && $request->get('search')['value'] != '') {
+                    $search = $request->get('search')['value'];
+                    $instance->where(function ($q) use ($search) {
+                        $q->where('delivery_receh.no_transaksi', 'LIKE', "%$search%")
+                        ->orWhere('record_receh.tgl_bln_thn', 'LIKE', "%$search%")
+                        ->orWhere('record_receh.tgl_bln_thn_dlv', 'LIKE', "%$search%")
+                        ->orWhere('record_receh.model', 'LIKE', "%$search%")
+                        ->orWhere('master_model_part.part_name', 'LIKE', "%$search%")
+                        ->orWhere('delivery_receh.part_number', 'LIKE', "%$search%")
+                        ->orWhere('record_receh.tipe_delv', 'LIKE', "%$search%")
+                        ->orWhere('record_receh.plant_dest', 'LIKE', "%$search%")
+                        ->orWhere('record_receh.qty_receh', 'LIKE', "%$search%")
+                        ->orWhere(DB::raw("CASE WHEN record_receh.flag = 1 THEN 'Proses' ELSE 'Berhasil' END"), 'LIKE', "%$search%");
+                    });
+                }
+            })
+            ->make(true);
+    }
+   
 
     public function getDataError(Request $request)
     {
@@ -202,8 +277,24 @@ class DashboardController extends Controller
             )
             ->distinct();
 
-        return DataTables::of($query)->make(true);
-    }   
+        return DataTables::of($query)
+            ->filter(function ($instance) use ($request) {
+                if ($request->has('search') && $request->get('search')['value'] != '') {
+                    $search = $request->get('search')['value'];
+                    $instance->where(function ($q) use ($search) {
+                        $q->where('logserror.no_transaksi', 'LIKE', "%$search%")
+                        ->orWhere('logserror.tgl_bln_thn', 'LIKE', "%$search%")
+                        ->orWhere('delivery.lot_number', 'LIKE', "%$search%")
+                        ->orWhere('record.model', 'LIKE', "%$search%")
+                        ->orWhere('delivery.part_number', 'LIKE', "%$search%")
+                        ->orWhere('record.tipe_delv', 'LIKE', "%$search%")
+                        ->orWhere('record.plant_dest', 'LIKE', "%$search%")
+                        ->orWhere('logserror.note', 'LIKE', "%$search%");
+                    });
+                }
+            })
+            ->make(true);
+    }
 
     public function getDataErrorRch(Request $request)
     {
@@ -222,8 +313,25 @@ class DashboardController extends Controller
             )
             ->distinct();
 
-        return DataTables::of($query)->make(true);
-    }   
+        return DataTables::of($query)
+            ->filter(function ($instance) use ($request) {
+                if ($request->has('search') && $request->get('search')['value'] != '') {
+                    $search = $request->get('search')['value'];
+                    $instance->where(function ($q) use ($search) {
+                        $q->where('logserror.no_transaksi', 'LIKE', "%$search%")
+                        ->orWhere('logserror.tgl_bln_thn', 'LIKE', "%$search%")
+                        ->orWhere('delivery_receh.lot_number', 'LIKE', "%$search%")
+                        ->orWhere('record_receh.model', 'LIKE', "%$search%")
+                        ->orWhere('delivery_receh.part_number', 'LIKE', "%$search%")
+                        ->orWhere('record_receh.tipe_delv', 'LIKE', "%$search%")
+                        ->orWhere('record_receh.plant_dest', 'LIKE', "%$search%")
+                        ->orWhere('logserror.note', 'LIKE', "%$search%");
+                    });
+                }
+            })
+            ->make(true);
+    }
+ 
 
     public function exportErrorLogs()
     {
