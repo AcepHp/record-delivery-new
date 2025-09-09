@@ -88,7 +88,7 @@ class DashboardController extends Controller
             ->join('record', 'delivery.no_transaksi', '=', 'record.no_transaksi')
             ->join('master_model_part', function ($join) {
                 $join->on('delivery.part_number', '=', 'master_model_part.part_number')
-                    ->on('record.model', '=', 'master_model_part.model');
+                     ->on('record.model', '=', 'master_model_part.model');
             })
             ->select(
                 'delivery.no_transaksi', 
@@ -103,9 +103,7 @@ class DashboardController extends Controller
             )
             ->distinct()
             ->where('delivery.flag', 0)
-            ->where('record.flag', 0)
-            ->get();
-            
+            ->where('record.flag', 0);
 
         return DataTables::of($query)->make(true);
     }
@@ -116,7 +114,7 @@ class DashboardController extends Controller
             ->join('record_receh', 'delivery_receh.no_transaksi', '=', 'record_receh.no_transaksi')
             ->join('master_model_part', function ($join) {
                 $join->on('delivery_receh.part_number', '=', 'master_model_part.part_number')
-                    ->on('record_receh.model', '=', 'master_model_part.model');
+                     ->on('record_receh.model', '=', 'master_model_part.model');
             })
             ->select(
                 'delivery_receh.no_transaksi', 
@@ -132,9 +130,7 @@ class DashboardController extends Controller
             )
             ->distinct()
             ->where('delivery_receh.flag', 0)
-            ->where('record_receh.flag', 0)
-            ->get();
-            
+            ->where('record_receh.flag', 0);
 
         return DataTables::of($query)->make(true);
     }
@@ -145,7 +141,7 @@ class DashboardController extends Controller
             ->join('record', 'delivery.no_transaksi', '=', 'record.no_transaksi')
             ->join('master_model_part', function ($join) {
                 $join->on('delivery.part_number', '=', 'master_model_part.part_number')
-                    ->on('record.model', '=', 'master_model_part.model');
+                     ->on('record.model', '=', 'master_model_part.model');
             })
             ->select(
                 'delivery.no_transaksi',
@@ -159,10 +155,8 @@ class DashboardController extends Controller
                 'record.qty',
                 DB::raw("CASE WHEN record.flag = 1 THEN 'Proses' ELSE 'Berhasil' END AS status")
             )
-            ->distinct()
-            ->orderBy('record.tgl_bln_thn', 'desc')
-            ->get();
-    
+            ->distinct();
+
         return DataTables::of($query)->make(true);
     }   
     
@@ -172,7 +166,7 @@ class DashboardController extends Controller
             ->join('record_receh', 'delivery_receh.no_transaksi', '=', 'record_receh.no_transaksi')
             ->join('master_model_part', function ($join) {
                 $join->on('delivery_receh.part_number', '=', 'master_model_part.part_number')
-                    ->on('record_receh.model', '=', 'master_model_part.model');
+                     ->on('record_receh.model', '=', 'master_model_part.model');
             })
             ->select(
                 'delivery_receh.no_transaksi',
@@ -186,10 +180,8 @@ class DashboardController extends Controller
                 'record_receh.qty_receh',
                 DB::raw("CASE WHEN record_receh.flag = 1 THEN 'Proses' ELSE 'Berhasil' END AS status")
             )
-            ->distinct()
-            ->orderBy('record_receh.tgl_bln_thn', 'desc')
-            ->get();
-    
+            ->distinct();
+
         return DataTables::of($query)->make(true);
     }   
 
@@ -198,7 +190,6 @@ class DashboardController extends Controller
         $query = DB::table('logserror')
             ->join('delivery', 'logserror.no_transaksi', '=', 'delivery.no_transaksi')
             ->join('record', 'logserror.no_transaksi', '=', 'record.no_transaksi')
-            
             ->select(
                 'logserror.no_transaksi',
                 'logserror.tgl_bln_thn', 
@@ -209,9 +200,8 @@ class DashboardController extends Controller
                 'record.plant_dest',
                 'logserror.note'
             )
-            ->distinct()
-            ->get();
-    
+            ->distinct();
+
         return DataTables::of($query)->make(true);
     }   
 
@@ -220,7 +210,6 @@ class DashboardController extends Controller
         $query = DB::table('logserror')
             ->join('delivery_receh', 'logserror.no_transaksi', '=', 'delivery_receh.no_transaksi')
             ->join('record_receh', 'logserror.no_transaksi', '=', 'record_receh.no_transaksi')
-            
             ->select(
                 'logserror.no_transaksi',
                 'logserror.tgl_bln_thn', 
@@ -231,9 +220,8 @@ class DashboardController extends Controller
                 'record_receh.plant_dest',
                 'logserror.note'
             )
-            ->distinct()
-            ->get();
-    
+            ->distinct();
+
         return DataTables::of($query)->make(true);
     }   
 
